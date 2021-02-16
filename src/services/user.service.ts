@@ -66,6 +66,20 @@ class UserService {
         return res.status(200).send(user);
     }
 
+    public async getUserBalance(req: Request, res: Response, next: NextFunction) {
+        if (!req.params.userId) {
+            return next(new HttpException(404, 'No data provided.'));
+        }
+
+        const user = await this.userRepository.getUserById(req.params.userId);
+        const bitcoin = await this.bitcoinRepository.getBitcoin();
+
+        const balance = user.usdBalance + user.bitcoinAmount * bitcoin.price;
+
+        return res.status(200).send({
+            balance
+        });
+    }
 }
 
 export default UserService;
