@@ -10,7 +10,7 @@ const app = new App({
     bodyParser.json(),
     bodyParser.urlencoded({ extended: true }),
     corsMiddleware,
-    loggerMiddleware,
+    loggerMiddleware
   ],
 });
 
