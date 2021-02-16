@@ -48,22 +48,19 @@ class UserRepository {
 
   public async updateUsdAmount(
     id: number,
-    amount: number
+    data: {
+      usdBalance: number;
+      bitcoinAmount: number;
+    }
   ): Promise<IUserDto | null> {
     const userIndex = this.users.findIndex((user) => user.id == id);
     if (userIndex === -1) {
       return null;
     }
 
-    this.users[userIndex] = Object.assign(
-      this.users[userIndex],
-      {
-        usdBalance: amount,
-      },
-      {
-        updatedAt: moment().format(),
-      }
-    );
+    this.users[userIndex] = Object.assign(this.users[userIndex], data, {
+      updatedAt: moment().format(),
+    });
 
     return this.users[userIndex];
   }
