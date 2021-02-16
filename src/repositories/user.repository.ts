@@ -1,3 +1,4 @@
+import moment from "moment";
 import { IEditUser } from "../app/common/interfaces/IEditUser.model";
 import { ISignUp } from "../app/common/interfaces/ISignUp.model";
 import { IUserDto } from "../app/common/schemas/IUser.dto";
@@ -11,7 +12,7 @@ class UserRepository {
             id: this.users.length + 1,
             bitcoinAmount: 0,
             usdBalance: 0,
-            createdAt: Date.now(),
+            createdAt: moment().format(),
             updatedAt: null,
           });
         this.users.push(user);
@@ -32,7 +33,7 @@ class UserRepository {
             name: data.name ? data.name : this.users[userIndex].name,
             email: data.email ? data.email : this.users[userIndex].email
         }, {
-            updatedAt: Date.now(),
+            updatedAt: moment().format(),
         });
 
         return this.users[userIndex];
