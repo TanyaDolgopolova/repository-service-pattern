@@ -44,6 +44,12 @@ class UserController implements IControllerBase {
       (req: Request, res: Response, next: NextFunction) =>
         this.userService.updateUsdAmount(req, res, next)
     );
+
+    this.router.post(
+      `${config.baseRoute}/users/:userId/bitcoins`,
+      (req: Request, res: Response, next: NextFunction) =>
+        this.userService.manageUserBitcoins(req, res, next)
+    );
   }
 }
 

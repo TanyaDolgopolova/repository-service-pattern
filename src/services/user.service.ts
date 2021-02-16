@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import validator from 'validator';
+import BitcoinActionEnum from '../app/common/enums/BitcoinAction.enum';
 import UsdActionEnum from '../app/common/enums/UsdAction.enum';
 import HttpException from '../app/common/HttpException';
 import { IEditUser } from '../app/common/interfaces/IEditUser.model';
 import { ISignUp } from '../app/common/interfaces/ISignUp.model';
 import { IUpdateUsdAmount } from '../app/common/interfaces/IUpdateUsdAmount.model';
+import { IUpdateUserBitcoins } from '../app/common/interfaces/IUpdateUserBitcoin';
 import BitcoinRepository from '../repositories/bitcoin.repository';
 import UserRepository from '../repositories/user.repository';
 
@@ -110,12 +112,11 @@ class UserService {
     const user = await this.userRepository.getUserById(
       Number(req.params.userId)
     );
-    let amount = user.usdBalance;
 
     switch (body.action) {
       case UsdActionEnum.DEPOSIT: {
         if (validator.isNumeric(body.amount + '')) {
-          amount = body.amount + user.usdBalance;
+          user.usdBalance = body.amount + user.usdBalance;
         }
 
         break;
@@ -123,7 +124,7 @@ class UserService {
       case UsdActionEnum.WITHDRAW: {
         if (validator.isNumeric(body.amount + '')) {
           if (user.usdBalance >= body.amount) {
-            amount = user.usdBalance - body.amount;
+            user.usdBalance = user.usdBalance - body.amount;
           } else {
             return next(new HttpException(400, 'Insufficient funds.'));
           }
@@ -136,10 +137,70 @@ class UserService {
       }
     }
 
-    const updatedUser = await this.userRepository.updateUsdAmount(
-      user.id,
-      amount
+    const updatedUser = await this.userRepository.updateUsdAmount(user.id, {
+      usdBalance: user.usdBalance,
+      bitcoinAmount: user.bitcoinAmount,
+    });
+
+    return res.status(200).send(updatedUser);
+  }
+
+  public async manageUserBitcoins(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const body = req.body as IUpdateUserBitcoins;
+
+    if (
+      !body ||
+      Object.getOwnPropertyNames(body).length === 0 ||
+      !req.params.userId
+    ) {
+      return next(new HttpException(404, 'No data provided.'));
+    }
+
+    const user = await this.userRepository.getUserById(
+      Number(req.params.userId)
     );
+    const bitcoin = await this.bitcoinRepository.getBitcoin();
+
+    switch (body.action) {
+      case BitcoinActionEnum.BUY: {
+        if (validator.isNumeric(body.amount + '')) {
+          const withdrawUsd = body.amount * bitcoin.price;
+          if (user.usdBalance >= withdrawUsd) {
+            user.usdBalance -= withdrawUsd;
+            user.bitcoinAmount += body.amount;
+          } else {
+            return next(new HttpException(400, 'Insufficient funds.'));
+          }
+        }
+
+        break;
+      }
+      case BitcoinActionEnum.SELL: {
+        if (validator.isNumeric(body.amount + '')) {
+          if (user.bitcoinAmount >= body.amount) {
+            const depositUsd = body.amount * bitcoin.price;
+            user.usdBalance += depositUsd;
+            user.bitcoinAmount -= body.amount;
+          } else {
+            return next(new HttpException(400, 'Insufficient funds.'));
+          }
+        }
+
+        break;
+      }
+      default: {
+        return next(new HttpException(404, 'No data provided.'));
+      }
+    }
+
+    const updatedUser = await this.userRepository.updateUsdAmount(user.id, {
+      usdBalance: user.usdBalance,
+      bitcoinAmount: user.bitcoinAmount,
+    });
 
     return res.status(200).send(updatedUser);
   }
