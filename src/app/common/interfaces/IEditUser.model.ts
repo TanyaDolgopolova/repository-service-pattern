@@ -1,5 +1,4 @@
-
 export interface IEditUser {
-    name: string;
-    email: string;
+  name: string;
+  email: string;
 }

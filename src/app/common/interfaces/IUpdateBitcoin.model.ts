@@ -1,4 +1,3 @@
-
 export interface IUpdateBitcoin {
-    price: number;
+  price: number;
 }

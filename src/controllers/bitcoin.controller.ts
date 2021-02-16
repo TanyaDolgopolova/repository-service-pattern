@@ -9,20 +9,22 @@ class BitcoinController implements IControllerBase {
   private readonly bitcoinService: BitcoinService;
 
   constructor() {
-    this.router = express.Router()
+    this.router = express.Router();
     this.bitcoinService = new BitcoinService();
     this.initRoutes();
   }
 
   public initRoutes(): void {
     this.router.get(
-        `${config.baseRoute}/bitcoin`,
-        (req: Request, res: Response, next: NextFunction) => this.bitcoinService.getCurrent(req, res, next)
+      `${config.baseRoute}/bitcoin`,
+      (req: Request, res: Response, next: NextFunction) =>
+        this.bitcoinService.getCurrent(req, res, next)
     );
 
     this.router.put(
-        `${config.baseRoute}/bitcoin`,
-        (req: Request, res: Response, next: NextFunction) => this.bitcoinService.updateCurrency(req, res, next)
+      `${config.baseRoute}/bitcoin`,
+      (req: Request, res: Response, next: NextFunction) =>
+        this.bitcoinService.updateCurrency(req, res, next)
     );
   }
 }
