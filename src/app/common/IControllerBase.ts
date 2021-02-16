@@ -1,7 +1,5 @@
-
 interface IControllerBase {
-    initRoutes(): any;
+  initRoutes(): any;
 }
-  
+
 export default IControllerBase;
-  

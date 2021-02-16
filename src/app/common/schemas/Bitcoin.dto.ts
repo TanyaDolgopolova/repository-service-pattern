@@ -1,5 +1,4 @@
-
 export class BitcoinDto {
-    price: number = 100.00;
-    updatedAt: string | null = null;
+  price: number = 100.0;
+  updatedAt: string | null = null;
 }
