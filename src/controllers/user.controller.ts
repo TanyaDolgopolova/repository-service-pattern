@@ -29,6 +29,11 @@ class UserController implements IControllerBase {
         `${config.baseRoute}/users/:id`,
         (req: Request, res: Response, next: NextFunction) => this.userService.editUserById(req, res, next)
     );
+
+    this.router.get(
+      `${config.baseRoute}/users/:userId/balance`,
+      (req: Request, res: Response, next: NextFunction) => this.userService.getUserBalance(req, res, next)
+  );
   }
 }
 
