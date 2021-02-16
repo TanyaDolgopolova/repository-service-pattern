@@ -6,6 +6,6 @@ export interface IUserDto {
     email: string;
     bitcoinAmount: number;
     usdBalance: number;
-    createdAt: number;
-    updatedAt: number | null;
+    createdAt: string;
+    updatedAt: string | null;
 }
