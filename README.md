@@ -1,4 +1,4 @@
-# Node.js Structure Example
+# Express + Node.js Structure Example
 The main purpose of this repository is to show a working Node.js API Server  and workflow for writing Node code in TypeScript.
 
 # Pre-reqs
